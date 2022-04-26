@@ -228,6 +228,7 @@ export default class App {
   getOnPremiseEstimatesFromInputData(
     inputData: OnPremiseDataInput[],
   ): OnPremiseDataOutput[] {
+    console.log(inputData);
     return OnPremise.getOnPremiseDataFromInputData(inputData)
   }
 }

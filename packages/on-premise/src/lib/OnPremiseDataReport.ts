@@ -138,6 +138,15 @@ export default class OnPremiseDataReport {
       powerUsageEffectiveness,
     }
 
+    //console.log("#################");
+    // console.log(computeUsage);
+    // console.log("#################");
+    // console.log(region);
+    // console.log("#################");
+    // console.log(emissionsFactors);
+    // console.log("#################");
+    // console.log(computeConstants);
+    // console.log("#################");
     return this.computeEstimator.estimate(
       [computeUsage],
       region,
