@@ -17,3 +17,7 @@ export {
   RightsizingRecommendations,
   ComputeOptimizerRecommendations,
 } from './Recommendations'
+export {
+  EC2_INSTANCE_TYPES,
+  INSTANCE_TYPE_COMPUTE_PROCESSOR_MAPPING,
+} from './AWSInstanceTypes'
