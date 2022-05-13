@@ -55,7 +55,7 @@ export default async function createLookupTable(
 
   const azureInputFile = programOptions.azureInput
   const azureOutputFile = path.join(process.cwd(), programOptions.azureOutput)
-
+  console.log(awsInputFile)
   if (awsInputFile) {
     const awsInputData: LookupTableInput[] = await csv().fromFile(awsInputFile)
     validateInputData(awsInputData)

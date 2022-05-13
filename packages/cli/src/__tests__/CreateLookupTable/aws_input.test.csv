@@ -1,7 +1,7 @@
 serviceName,region,usageType,usageUnit,vCpus
 AmazonEC2,us-east-1,USE1-EBSOptimized:m4.xlarge,Hrs,4
 AmazonEC2,ap-south-1,APS3-EUW3-AWS-Out-Bytes,GB,
-AmazonS3,ap-southeast-2,APS2-TimedStorage-ByteHrs,GB-Mo,
+AmazonS3,ap-southeast-2,APS2-TimedStorage-ByteHrs,GB-Hours,
 AmazonRDS,eu-west-2,EUW2-RDS:GP2-Storage,GB-Mo,
 AmazonRDS,us-east-1,Aurora:StorageIOUsage,IOs,
 AmazonECS,us-east-1,USE1-ECS-EC2-GB-Hours,GB-Hours,
@@ -11,3 +11,4 @@ AmazonEC2,us-east-1,m5a.8xlarge,Hrs,
 AmazonEC2,us-east-1,m5ad.8xlarge,Hrs,
 AmazonEC2,us-east-1,r5a.8xlarge,Hrs,
 AmazonEC2,us-east-1,r5ad.8xlarge,Hrs,
+AmazonEC2,ap-south-1,DOWNLOAD,GB,
