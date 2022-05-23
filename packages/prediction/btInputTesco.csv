@@ -1,0 +1,5 @@
+﻿Host,CPU Model,Speed,# CPU,Cores per CPU,# Cores,CPU usage %,# Memory,Memory usage %,# NICs,# vCPUs,vCPUs per Core,vRAM,SiteName
+195.213.64.37,Intel(R) Xeon(R) Gold 6132 CPU @ 2.60GHz,"2,593",2,14,28,4,"195,235",27,10,22,0.79,"49,152",LONDON
+195.213.64.38,Intel(R) Xeon(R) Gold 6132 CPU @ 2.60GHz,"2,593",2,14,28,2,"195,235",38,10,30,1.07,"71,680",LONDON
+195.213.73.169,Intel(R) Xeon(R) Gold 6132 CPU @ 2.60GHz,"2,593",2,14,28,3,"195,235",46,10,39,1.39,"86,016",NIEUWEGEIN
+195.213.73.171,Intel(R) Xeon(R) Gold 6132 CPU @ 2.60GHz,"2,593",2,14,28,4,"195,235",42,10,33,1.18,"78,848",NIEUWEGEIN

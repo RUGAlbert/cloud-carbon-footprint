@@ -10,5 +10,6 @@ export default async function readBTData(
 ): Promise<any[]> {
 
   const btInputData = await csv().fromFile(btInputFile)
+  console.log(btInputData)
   return btInputData;
 }

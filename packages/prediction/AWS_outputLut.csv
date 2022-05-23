@@ -1,0 +1,7 @@
+serviceName,region,usageType,usageUnit,vCpus,machineType,kilowattHours,co2e
+AmazonEC2,eu-west-2,c5n.metal,Hrs,,,0.2423366927003587,0.00005525276593568179
+AmazonEC2,eu-west-2,c5n.metal,Hrs,,,0.2423366927003587,0.00005525276593568179
+AmazonEC2,eu-central-1,c5n.metal,Hrs,,,0.24157623630675085,0.00008165276787168178
+AmazonEC2,eu-central-1,c5n.metal,Hrs,,,0.24157623630675085,0.00008165276787168178
+AmazonEC2,us-east-1,DOWNLOAD,GB,,,0.001135,4.71881925e-7
+AmazonS3,us-east-1,APS2-TimedStorage-ByteHrs,GB-Hours,,,2.0129391486989334e-15,8.368895157673251e-19

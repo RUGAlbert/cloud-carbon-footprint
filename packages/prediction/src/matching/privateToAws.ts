@@ -11,6 +11,7 @@ import { INSTANCE_TYPE_COMPUTE_PROCESSOR_MAPPING } from '@cloud-carbon-footprint
 function formatPrivateData(privateData: any): any {
   // fix some data types
 
+  console.log(privateData)
   privateData['# CPU'] = parseInt(privateData['# CPU'])
   privateData['# Cores'] = parseInt(privateData['# Cores'])
 
@@ -137,8 +138,7 @@ function filterInstances(privateData: any, instances: any[]): any[] {
 
     //intel cpu processor check
     if (
-      INSTANCE_TYPE_COMPUTE_PROCESSOR_MAPPING[instance['Instance type']] ===
-      undefined
+      !( instance['Instance type'] in INSTANCE_TYPE_COMPUTE_PROCESSOR_MAPPING)
     ) {
       instances.splice(i, 1)
       removedReasons['unknown']++

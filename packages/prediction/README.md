@@ -19,8 +19,7 @@ $ yarn add @cloud-carbon-footprint/prediction
 ## Documentation
 yarn workspace @cloud-carbon-footprint/prediction start
 
-yarn create-lookup-table --awsInput C:\Users\alber\repositories\school\cloud-carbon-footprint\packages\cli\sr
-c\__tests__\CreateLookupTable\aws_input.test.csv
+yarn create-lookup-table --awsInput C:\Users\alber\repositories\school\cloud-carbon-footprint\packages\cli\src\__tests__\CreateLookupTable\aws_input.test.csv
 
 ## License
 

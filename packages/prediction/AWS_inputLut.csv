@@ -1,0 +1,7 @@
+serviceName,region,usageType,usageUnit,vCpus,machineType
+AmazonEC2,eu-west-2,c5n.metal,Hrs,,
+AmazonEC2,eu-west-2,c5n.metal,Hrs,,
+AmazonEC2,eu-central-1,c5n.metal,Hrs,,
+AmazonEC2,eu-central-1,c5n.metal,Hrs,,
+AmazonEC2,us-east-1,DOWNLOAD,GB,,
+AmazonS3,us-east-1,APS2-TimedStorage-ByteHrs,GB-Hours,,
