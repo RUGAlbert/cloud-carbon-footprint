@@ -11,7 +11,6 @@ import { INSTANCE_TYPE_COMPUTE_PROCESSOR_MAPPING } from '@cloud-carbon-footprint
 function formatPrivateData(privateData: any): any {
   // fix some data types
 
-  console.log(privateData)
   privateData['# CPU'] = parseInt(privateData['# CPU'])
   privateData['# Cores'] = parseInt(privateData['# Cores'])
 

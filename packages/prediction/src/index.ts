@@ -22,9 +22,9 @@ let BT = BTDataReader(
 )
 // let pred = BTDataReader("C:/Users/alber/repositories/school/cloud-carbon-footprint/packages/prediction/btInput.csv");
 
-const locationMapper : { [key: string]: string } = {
-  'NIEUWEGEIN': 'eu-central-1',
-  'LONDON': 'eu-west-2',
+const locationMapper: { [key: string]: string } = {
+  NIEUWEGEIN: 'eu-central-1',
+  LONDON: 'eu-west-2',
 }
 
 async function aysncDefeater(bt: any): Promise<void> {
@@ -36,62 +36,77 @@ async function aysncDefeater(bt: any): Promise<void> {
   while (i < 4) {
     let btConfig = abt[i]
     let res = await privateToAws(btConfig)
+    let loc = locationMapper[btConfig['SiteName'].toString()]
+
     let input: LookupTableInput = {} as LookupTableInput
     input['serviceName'] = 'AmazonEC2'
-    input['region'] = locationMapper[(btConfig['SiteName']).toString()]
+    input['region'] = loc
     input['usageType'] = res['Instance type']
     input['usageUnit'] = 'Hrs'
     input['vCpus'] = ''
     input['machineType'] = ''
     lookupInput.push(input)
+
+    //network
+    let network: LookupTableInput = {} as LookupTableInput
+    network['serviceName'] = 'AmazonEC2'
+    network['region'] = loc
+    network['usageType'] = 'DOWNLOAD'
+    network['usageUnit'] = 'GB'
+    network['vCpus'] = ''
+    network['machineType'] = ''
+    lookupInput.push(network)
+
+    //storage
+    let storage = {} as LookupTableInput
+    storage['serviceName'] = 'AmazonS3'
+    storage['region'] = loc
+    storage['usageType'] = 'APS2-TimedStorage-ByteHrs'
+    storage['usageUnit'] = 'GB-Hours'
+    storage['vCpus'] = ''
+    storage['machineType'] = ''
+    lookupInput.push(storage)
+
     i++
   }
 
-  //network
-  let input: LookupTableInput = {} as LookupTableInput
-  input['serviceName'] = 'AmazonEC2'
-  input['region'] = 'us-east-1'
-  input['usageType'] = 'DOWNLOAD'
-  input['usageUnit'] = 'GB'
-  input['vCpus'] = ''
-  input['machineType'] = ''
-  lookupInput.push(input)
-
-  //storage
-  input = {} as LookupTableInput
-  input['serviceName'] = 'AmazonS3'
-  input['region'] = 'us-east-1'
-  input['usageType'] = 'APS2-TimedStorage-ByteHrs'
-  input['usageUnit'] = 'GB-Hours'
-  input['vCpus'] = ''
-  input['machineType'] = ''
-  lookupInput.push(input)
-
   const inputLUTFile = path.join(process.cwd(), 'AWS_inputLut.csv')
   writeLUTInputToCsv(inputLUTFile, lookupInput)
+
   const outputLUTFile = path.join(process.cwd(), 'AWS_outputLut.csv')
   const awsEstimatesData: LookupTableOutput[] =
     new App().getAwsEstimatesFromInputData(lookupInput)
 
   writeLUTOutputToCsv(outputLUTFile, awsEstimatesData)
-  let cpuHours = 24 * 7
-  let gbDownloaded = 168.2856
-  let storage = 1510 * 24 * 7
 
   let totalEmmision = 0
+  let totalKwh = 0
+
+  i = 0
+
+  //asume it is the same order as before, this means we can do / 3
   awsEstimatesData.forEach((element) => {
+    let btConfig = abt[Math.floor(i / 3)]
     if (element['usageUnit'] === 'Hrs') {
+      console.log(btConfig)
+      let cpuHours = parseFloat(btConfig['cpuHours'])
       totalEmmision += element['co2e'] * cpuHours
-      console.log('cpu', element['kilowattHours'] * cpuHours)
+      totalKwh += element['kilowattHours'] * cpuHours
     } else if (element['usageUnit'] === 'GB') {
+      let gbDownloaded = parseFloat(btConfig['network'])
       totalEmmision += element['co2e'] * gbDownloaded
-      console.log('network', element['kilowattHours'] * gbDownloaded)
+      totalKwh += element['kilowattHours'] * gbDownloaded
     } else if (element['usageUnit'] === 'GB-Hours') {
+      let storage =
+        parseFloat(btConfig['storage']) * parseFloat(btConfig['storageHours'])
       totalEmmision += element['co2e'] * storage
-      console.log('storage', element['kilowattHours'] * storage)
+      totalKwh += element['kilowattHours'] * storage
     }
+    i++
   })
-  console.log(totalEmmision)
+  //convert tons to kg
+  console.log('co2e', totalEmmision * 970)
+  console.log('kwh', totalKwh)
 }
 
 aysncDefeater(BT)
