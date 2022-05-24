@@ -224,6 +224,8 @@ function keepInstanceWithLowestCost(instances: any[]): any {
 }
 
 export default async function privateToAws(privateData: any): Promise<any> {
+  
+  console.log(privateData)
   let instances = await getAWSData()
   privateData = formatPrivateData(privateData)
 

@@ -3,3 +3,4 @@
  */
 
 export { default as Prediction } from './Prediction'
+export { default as predictAWS} from './predictAWS'

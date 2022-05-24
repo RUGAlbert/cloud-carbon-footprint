@@ -3,3 +3,4 @@
  */
 
 export { default as privateToAws } from './privateToAws'
+export {MAP_LOCATIONS} from './locationMapper'
