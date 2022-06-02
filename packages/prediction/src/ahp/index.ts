@@ -1,0 +1,1 @@
+export { default as createAHPTable } from './AHPManager'

@@ -76,7 +76,7 @@ function getTotals(configs: any, awsEstimatesData: LookupTableOutput[]): any {
   })
 
   //convert from tons to kg
-  totalEmmision *= 970
+  totalEmmision *= 1000
 
   return { emission: totalEmmision, kwh: totalKwh }
 }
