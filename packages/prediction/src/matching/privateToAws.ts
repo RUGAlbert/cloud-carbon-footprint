@@ -5,8 +5,14 @@ import csv from 'csvtojson'
 import path from 'path'
 
 import { getAWSData } from './../dataSources'
+import { App } from '@cloud-carbon-footprint/app'
+import {
+  LookupTableInput,
+  LookupTableOutput,
+} from '@cloud-carbon-footprint/common'
 
 import { INSTANCE_TYPE_COMPUTE_PROCESSOR_MAPPING } from '@cloud-carbon-footprint/aws'
+import { privateEncrypt } from 'crypto'
 
 function formatPrivateData(privateData: any): any {
   // fix some data types
@@ -47,7 +53,6 @@ function filterInstances(privateData: any, instances: any[]): any[] {
 
   let i = instances.length
 
-  console.log(instances.length)
   while (i--) {
     let instance = instances[i]
     //start with cpus
@@ -146,7 +151,6 @@ function filterInstances(privateData: any, instances: any[]): any[] {
   }
 
   console.log(removedReasons)
-  console.log(instances.length)
   return instances
 }
 
@@ -167,36 +171,96 @@ function keepBestOfFamily(instances: any): any[] {
   return instances
 }
 
-function instanceFitter(privateData: any, instances: any[]): any[] {
+function createDictForPropery(instances: any, property: string): any {
+  var dict :  { [id: string] : Object; } = {}
+  let minCost = Infinity
+  let maxCost = 0
+  let i = instances.length
+  while (i--) {
+    let instance = instances[i]
+    minCost = Math.min(minCost, instance[property])
+    maxCost = Math.max(maxCost, instance[property])
+  }
+  dict['min'] = minCost
+  dict['max'] = maxCost
+  return dict
+}
+
+function createPropertiesDict(instances: any[], weights: any) : any {
+  var dict :  { [id: string] : Object; } = {}
+  weights.forEach((value: boolean, key: string) => {
+    let pDict = createDictForPropery(instances, key)
+    dict[key] = pDict
+    console.log(pDict)
+  })
+  return dict
+}
+
+function instanceFitter(privateData: any, instances: any[], weights: any): any[] {
   // remove those which are way too different
   let instanceCosts: number[] = []
-  let minCost = Infinity
+  let maxCost = 0
 
-  let i = 0
+  //fix prices properties
+  let i = instances.length
+  while (i--) {
+    let instance = instances[i]
+
+    instance['On-Demand Windows pricing'] = parseFloat(instance['On-Demand Windows pricing'].split(' ')[0])
+    instance['On-Demand Linux pricing'] = parseFloat(instance['On-Demand Linux pricing'].split(' ')[0])
+
+    // get emmision
+    let lookupInput : any[] = []
+    let input: LookupTableInput = {} as LookupTableInput
+    input['serviceName'] = 'AmazonEC2'
+    input['region'] = 'eu-west-2'
+    input['usageType'] = instance['Instance type']
+    input['usageUnit'] = 'Hrs'
+    input['vCpus'] = ''
+    input['machineType'] = ''
+
+    lookupInput.push(input)
+
+    const awsEstimatesData: LookupTableOutput[] = new App().getAwsEstimatesFromInputData(lookupInput)
+
+    //removes those the model doesn't know
+    if(isNaN(awsEstimatesData[0]['co2e'])){
+      instances.splice(i, 1)
+      continue
+    }
+    //splice
+    instance['Emmision'] = awsEstimatesData[0]['co2e']
+  }
+
+  let propertyDict = createPropertiesDict(instances, weights['values'])
+
+  i = 0
+  console.log(weights['config'])
   while (i < instances.length) {
     let instance = instances[i]
     let cost = 0
-    cost += parseInt(instance['vCPUs']) / privateData['# CPU']
+    weights['values'].forEach((value: number, key: string) => {
+      let pDict = propertyDict[key]
+      let val = (parseFloat(instance[key]) - pDict['min'])/(pDict['max'] - pDict['min'])
+      if(weights['config'][key] === '-'){
+        val = 1 - val
+      }
+      cost += val * value
+    })
 
-    cost += parseInt(instance['Cores']) / privateData['# Cores']
-
-    cost +=
-      parseFloat(instance['Sustained clock speed (GHz)']) / privateData['Speed']
-
-    if (cost < minCost) {
-      minCost = cost
+    if (cost > maxCost) {
+      maxCost = cost
     }
 
     instanceCosts.push(cost)
     i++
   }
 
-  console.log(minCost)
-
+  
+  console.log(instanceCosts)
   i = instances.length
-  console.log(instances.length)
   while (i--) {
-    if (instanceCosts[i] > minCost) {
+    if (instanceCosts[i] < maxCost) {
       instances.splice(i, 1)
     }
   }
@@ -211,7 +275,7 @@ function keepInstanceWithLowestCost(instances: any[]): any {
   let i = 0
   while (i < instances.length) {
     let instance = instances[i]
-    let cost = parseFloat(instance['On-Demand Linux pricing'].split(' ')[0])
+    let cost = instance['On-Demand Linux pricing']
 
     if (cost < minCost) {
       minCost = cost
@@ -223,9 +287,8 @@ function keepInstanceWithLowestCost(instances: any[]): any {
   return bestInstance
 }
 
-export default async function privateToAws(privateData: any): Promise<any> {
+export default async function privateToAws(privateData: any, weights: any): Promise<any> {
   
-  console.log(privateData)
   let instances = await getAWSData()
   privateData = formatPrivateData(privateData)
 
@@ -235,7 +298,8 @@ export default async function privateToAws(privateData: any): Promise<any> {
     instances = keepBestOfFamily(instances)
   }
 
-  instances = instanceFitter(privateData, instances)
+  instances = instanceFitter(privateData, instances, weights)
 
+  console.log("Length", instances.length)
   return keepInstanceWithLowestCost(instances)
 }

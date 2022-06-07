@@ -15,13 +15,15 @@ let BT = BTDataReader(
 
 
 async function aysncDefeater(bt: any): Promise<void> {
+  let weights = createAHPTable('C:\\Users\\alber\\repositories\\school\\cloud-carbon-footprint\\packages\\prediction\\ahpWeights.csv');
   let abt = await bt
-  let res = await predictAWS(abt)
+  let aweights = await weights
+  console.log(aweights)
+  let res = await predictAWS(abt, aweights)
   console.log(res)
 }
 
-createAHPTable(["Cost","Price","Availability","CPU"]);
-// aysncDefeater(BT)
+aysncDefeater(BT)
 //let pred = new Prediction()
 // let res = Prediction.serverStructureToAWSStructure("AMD EPYC 1st Gen", 4, 32)
 // Prediction.serverStructureToAWSStructure("AMD EPYC 1st Gen", 8, 32)

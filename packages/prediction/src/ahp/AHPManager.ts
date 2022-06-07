@@ -1,13 +1,16 @@
 import csv from 'csvtojson'
 
-export default async function createAHPTable(params : string[]) : Promise<number[]> {
-	let w = await getWeights(params)
-	return []
+export default async function createAHPTable(filepath : string) : Promise<{}> {
+	let w = getWeights(filepath)
+	return w
 }
 
-async function getWeights(params: string[]) : Promise<Map<string, number>> {
-	const matrix = await csv().fromFile('C:\\Users\\alber\\repositories\\school\\cloud-carbon-footprint\\packages\\prediction\\ahpWeights.csv')
-	console.log(matrix)
+async function getWeights(filepath: string) : Promise<{}> {
+	const matrix = await csv().fromFile(filepath)
+	let params = []
+	for (const [k, _] of Object.entries(matrix[0])) {
+		params.push(k)
+	}
 	let length = params.length
 	let totals = new Map<string, number>();
 	let weights = new Map<string, number>();
@@ -22,13 +25,6 @@ async function getWeights(params: string[]) : Promise<Map<string, number>> {
 		totals.set(params[i], val);
 	}
 
-	//get weighted matrix
-	for (var i=0; i< length; i++) {
-		for (var j=0; j< length; j++) {
-			//matrix[j][params[i]] /= 
-		}
-	}
-
 	//get weighted weights
 	for (var i=0; i< length; i++) {
 		let val = 0
@@ -39,11 +35,6 @@ async function getWeights(params: string[]) : Promise<Map<string, number>> {
 	}
 
 
-
-	console.log(totals)
-	console.log(matrix)
-	console.log(weights)
-
 	let lambda = 0
 	//calculate consistency
 	for (var i=0; i< length; i++) {
@@ -51,19 +42,21 @@ async function getWeights(params: string[]) : Promise<Map<string, number>> {
 		for (var j=0; j< length; j++) {
 			val += matrix[i][params[j]] * weights.get(params[j])
 		}
-		console.log(val / weights.get(params[i]))
 		lambda += val / weights.get(params[i])
 	}
 	lambda /= length
-	console.log(lambda)
 
 	let CI = (lambda - length) / (length - 1)
-	console.log(CI)
 
-	//give warning for some reason
+	//give warning if the APH cannot be done with these values
 	if(CI >= 0.1){
 		console.log("Be carefull APH is not correct")
 	}
 
-	return weights
+	console.log(matrix[length])
+	const dict = {
+		values: weights,
+		config: matrix[length]
+	}
+	return dict
 }

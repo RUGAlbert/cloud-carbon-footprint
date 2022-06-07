@@ -8,12 +8,12 @@ import { App } from '@cloud-carbon-footprint/app'
 import { MAP_LOCATIONS } from './../matching'
 import path from 'path'
 
-async function createLookupTable(configs: any): Promise<LookupTableInput[]> {
+async function createLookupTable(configs: any, weights: any): Promise<LookupTableInput[]> {
   let lookupInput: LookupTableInput[] = []
   let i = 0
   while (i < 4) {
     let config = configs[i]
-    let res = await privateToAws(config)
+    let res = await privateToAws(config, weights)
     let loc = MAP_LOCATIONS[config['SiteName'].toString()]
 
     let input: LookupTableInput = {} as LookupTableInput
@@ -81,8 +81,8 @@ function getTotals(configs: any, awsEstimatesData: LookupTableOutput[]): any {
   return { emission: totalEmmision, kwh: totalKwh }
 }
 
-export default async function predictAWS(configs: any) : Promise<any> {
-  let lookupInput = await createLookupTable(configs)
+export default async function predictAWS(configs: any, weights: any) : Promise<any> {
+  let lookupInput = await createLookupTable(configs, weights)
 
   const inputLUTFile = path.join(process.cwd(), 'AWS_inputLut.csv')
   writeLUTInputToCsv(inputLUTFile, lookupInput)
