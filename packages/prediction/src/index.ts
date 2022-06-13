@@ -14,10 +14,10 @@ let BT = BTDataReader(
 )
 // let pred = BTDataReader("C:/Users/alber/repositories/school/cloud-carbon-footprint/packages/prediction/btInput.csv");
 
-
-
 async function aysncDefeater(bt: any): Promise<void> {
-  let weights = createAHPTable('C:\\Users\\alber\\repositories\\school\\cloud-carbon-footprint\\packages\\prediction\\ahpWeights.csv');
+  let weights = createAHPTable(
+    'C:\\Users\\alber\\repositories\\school\\cloud-carbon-footprint\\packages\\prediction\\ahpWeights.csv',
+  )
   let abt = await bt
   let aweights = await weights
   console.log(aweights)
@@ -25,7 +25,6 @@ async function aysncDefeater(bt: any): Promise<void> {
   const predictionOutputFile = path.join(process.cwd(), 'predictionOutput.csv')
   writePredictionToCsv(predictionOutputFile, res)
   console.log(res)
-
 }
 
 aysncDefeater(BT)
@@ -37,5 +36,6 @@ aysncDefeater(BT)
 // console.log(res)
 
 // awsMain()
+
 
 export * from './application'
