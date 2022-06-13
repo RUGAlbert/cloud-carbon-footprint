@@ -3,8 +3,10 @@
  */
 // import {awsMain} from './reportTests'
 import { predictAWS } from './application'
-import { BTDataReader } from './dataSources'
+import { BTDataReader, writePredictionToCsv } from './dataSources'
 import { createAHPTable } from './ahp'
+import process from 'process'
+import path from 'path'
 
 // let pred = BTDataReader("C:\Users\alber\repositories\school\cloud-carbon-footprint\packages\prediction\btInput.csv");
 let BT = BTDataReader(
@@ -20,7 +22,10 @@ async function aysncDefeater(bt: any): Promise<void> {
   let aweights = await weights
   console.log(aweights)
   let res = await predictAWS(abt, aweights)
+  const predictionOutputFile = path.join(process.cwd(), 'predictionOutput.csv')
+  writePredictionToCsv(predictionOutputFile, res)
   console.log(res)
+
 }
 
 aysncDefeater(BT)

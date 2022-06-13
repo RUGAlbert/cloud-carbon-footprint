@@ -221,7 +221,6 @@ export default class CostAndUsageReports {
       this.usageTypeIsUnknown(costAndUsageReportRow.usageType) ||
       this.usageUnitIsUnknown(costAndUsageReportRow.usageUnit)
       ) {
-        console.log("0:" + costAndUsageReportRow.instanceType);
         unknownRows.push(costAndUsageReportRow)
         return
       }
@@ -245,7 +244,6 @@ export default class CostAndUsageReports {
       case KNOWN_USAGE_UNITS.DPU_HOUR:
       case KNOWN_USAGE_UNITS.ACU_HOUR:
         // Compute / Memory
-        console.log("1:" + costAndUsageReportRow.instanceType);
         const computeFootprint = new AWSComputeEstimatesBuilder(
           costAndUsageReportRow,
           this.computeEstimator,
@@ -311,7 +309,6 @@ export default class CostAndUsageReports {
       case KNOWN_USAGE_UNITS.GB_MONTH_3:
       case KNOWN_USAGE_UNITS.GB_MONTH_4:
       case KNOWN_USAGE_UNITS.GB_HOURS:
-        console.log("2:" + costAndUsageReportRow.instanceType);
         // Storage
         return this.getStorageFootprintEstimate(
           costAndUsageReportRow,
@@ -320,7 +317,6 @@ export default class CostAndUsageReports {
         )
       case KNOWN_USAGE_UNITS.SECONDS_1:
       case KNOWN_USAGE_UNITS.SECONDS_2:
-        console.log("3:" + costAndUsageReportRow.instanceType);
         // Lambda
         costAndUsageReportRow.vCpuHours =
           costAndUsageReportRow.usageAmount / 3600
@@ -330,7 +326,6 @@ export default class CostAndUsageReports {
         ).computeFootprint
       case KNOWN_USAGE_UNITS.GB_1:
       case KNOWN_USAGE_UNITS.GB_2:
-        console.log("4:" + costAndUsageReportRow.instanceType);
         // Networking
         return this.getNetworkingFootprintEstimate(
           costAndUsageReportRow,
@@ -338,7 +333,6 @@ export default class CostAndUsageReports {
           emissionsFactors,
         )
       default:
-        console.log("def?:" + costAndUsageReportRow.instanceType);
         this.costAndUsageReportsLogger.warn(
           `Unexpected pricing unit: ${costAndUsageReportRow.usageUnit}`,
         )

@@ -53,7 +53,7 @@ async function getWeights(filepath: string) : Promise<{}> {
 		console.log("Be carefull APH is not correct")
 	}
 
-	console.log(matrix[length])
+	
 	const dict = {
 		values: weights,
 		config: matrix[length]

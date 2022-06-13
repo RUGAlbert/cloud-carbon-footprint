@@ -66,11 +66,8 @@ export function main() {
   }
 
   let res = Prediction.getPredictionDataFromInputData(row)
-  console.log('test')
-  console.log(res)
 
   //compute
-  console.log('Compute estimator')
   let computeEstimator = new ComputeEstimator()
 
   let estimate = computeEstimator.estimate(
@@ -79,6 +76,4 @@ export function main() {
     emissionsFactors,
     computeConstants,
   )[0]
-
-  console.log(estimate)
 }

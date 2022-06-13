@@ -191,7 +191,6 @@ function createPropertiesDict(instances: any[], weights: any) : any {
   weights.forEach((value: boolean, key: string) => {
     let pDict = createDictForPropery(instances, key)
     dict[key] = pDict
-    console.log(pDict)
   })
   return dict
 }
@@ -235,7 +234,7 @@ function instanceFitter(privateData: any, instances: any[], weights: any): any[]
   let propertyDict = createPropertiesDict(instances, weights['values'])
 
   i = 0
-  console.log(weights['config'])
+  
   while (i < instances.length) {
     let instance = instances[i]
     let cost = 0
@@ -256,8 +255,6 @@ function instanceFitter(privateData: any, instances: any[], weights: any): any[]
     i++
   }
 
-  
-  console.log(instanceCosts)
   i = instances.length
   while (i--) {
     if (instanceCosts[i] < maxCost) {
@@ -300,6 +297,5 @@ export default async function privateToAws(privateData: any, weights: any): Prom
 
   instances = instanceFitter(privateData, instances, weights)
 
-  console.log("Length", instances.length)
   return keepInstanceWithLowestCost(instances)
 }

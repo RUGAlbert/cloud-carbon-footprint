@@ -1,0 +1,5 @@
+cpuDescription,machineName,memory,machineType,startTime,endTime,country,region,cost,cpuUtilization,powerUsageEffectiveness,dailyUptime,weeklyUptime,monthlyUptime,annualUptime
+Intel(R) Xeon(R) Gold 6132 CPU @ 2.60GHz,Intel(R) Xeon(R) Gold 6132 CPU @ 2.60GHz,1130,server,2022-01-17T13:38:18Z,2022-01-24T13:38:18Z,unknown,unknown,93.12,,,4,12,36,36
+Intel(R) Xeon(R) Gold 6132 CPU @ 2.60GHz,Intel(R) Xeon(R) Gold 6132 CPU @ 2.60GHz,1510,server,2022-01-17T13:38:18Z,2022-01-24T13:38:18Z,unknown,unknown,93.12,,,4,12,36,36
+Intel(R) Xeon(R) Gold 6132 CPU @ 2.60GHz,Intel(R) Xeon(R) Gold 6132 CPU @ 2.60GHz,2780,server,2022-01-17T13:38:18Z,2022-01-24T13:38:18Z,unknown,unknown,12000,,,7,168,672,8760
+Intel(R) Xeon(R) Gold 6132 CPU @ 2.60GHz,Intel(R) Xeon(R) Gold 6132 CPU @ 2.60GHz,1870,server,2022-01-17T13:38:18Z,2022-01-24T13:38:18Z,unknown,unknown,93.12,,,4,12,36,36
