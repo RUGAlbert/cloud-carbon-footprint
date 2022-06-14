@@ -19,12 +19,13 @@ import {
 async function createLookupTable(
   configs: any,
   weights: any,
+  forceConfig: any,
 ): Promise<LookupTableInput[]> {
   let lookupInput: LookupTableInput[] = []
   let i = 0
   while (i < 4) {
     let config = configs[i]
-    let res = await privateToAws(config, weights)
+    let res = await privateToAws(config, weights, forceConfig)
     let loc = MAP_LOCATIONS[config['SiteName'].toString()]
 
     let input: LookupTableInput = {} as LookupTableInput
@@ -65,7 +66,7 @@ async function createLookupTable(
 function getTotals(
   configs: any,
   awsEstimatesData: LookupTableOutput[],
-  onSiteValues: OnPremiseDataOutput[]
+  onSiteValues: OnPremiseDataOutput[],
 ): PredictionOutput[] {
   let awsTotalEmission = 0
   let awsTotalKwh = 0
@@ -85,7 +86,6 @@ function getTotals(
     let btConfig = configs[Math.floor(i / 3)]
     let OnPremiseConfig = onSiteValues[Math.floor(i / 3)]
     if (element['usageUnit'] === 'Hrs') {
-      console.log(OnPremiseConfig)
       let cpuHours = parseFloat(btConfig['cpuHours'])
 
       let res: PredictionOutput = {} as PredictionOutput
@@ -145,7 +145,7 @@ function getTotals(
   resTotal['localServiceName'] = '--'
   resTotal['awsCo2e'] = awsTotalEmission
   resTotal['awsKilowattHours'] = awsTotalKwh
-  
+
   resTotal['localCo2e'] = localTotalEmission
   resTotal['localKilowattHours'] = localTotalKwh
   predictionOutput.push(resTotal)
@@ -176,17 +176,16 @@ async function predictOnSite(configs: any[]): Promise<any> {
   const onPremiseEstimatesData: OnPremiseDataOutput[] =
     new App().getOnPremiseEstimatesFromInputData(onPremiseInputData)
 
-  console.log(onPremiseEstimatesData)
-
   return onPremiseEstimatesData
 }
 
 export default async function predictAWS(
   configs: any,
   weights: any,
+  forceConfig: any
 ): Promise<any> {
   let onSiteValues = await predictOnSite(configs)
-  let lookupInput = await createLookupTable(configs, weights)
+  let lookupInput = await createLookupTable(configs, weights, forceConfig)
 
   const inputLUTFile = path.join(process.cwd(), 'AWS_inputLut.csv')
   writeLUTInputToCsv(inputLUTFile, lookupInput)

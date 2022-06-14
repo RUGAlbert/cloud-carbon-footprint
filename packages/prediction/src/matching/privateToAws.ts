@@ -31,13 +31,14 @@ function formatPrivateData(privateData: any): any {
   privateData['# NICs'] = parseInt(privateData['# NICs'])
 
   // Config
-  privateData['forceStorage'] = false
-  privateData['forceMetal'] = true
-  privateData['forceDHS'] = true
   return privateData
 }
 
-function filterInstances(privateData: any, instances: any[]): any[] {
+function filterInstances(
+  privateData: any,
+  instances: any[],
+  forceConfig: any,
+): any[] {
   let removedReasons = {
     cpu: 0,
     ram: 0,
@@ -113,10 +114,12 @@ function filterInstances(privateData: any, instances: any[]): any[] {
 
     /* two option, there has to be storage
      * Otherwise remove those instances, since there are instances with the same config which are better suited
-    */
+     */
     if (
-      (privateData['forceStorage'] && instance['Local instance storage'] !== 'TRUE') || 
-      (!privateData['forceStorage'] && instance['Local instance storage'] === 'TRUE') 
+      (forceConfig['forceStorage'] &&
+        instance['Local instance storage'] !== 'TRUE') ||
+      (!forceConfig['forceStorage'] &&
+        instance['Local instance storage'] === 'TRUE')
     ) {
       instances.splice(i, 1)
       removedReasons['storage']++
@@ -124,7 +127,7 @@ function filterInstances(privateData: any, instances: any[]): any[] {
     }
 
     //force metal
-    if (privateData['forceMetal'] && instance['Bare metal'] !== 'TRUE') {
+    if (forceConfig['forceMetal'] && instance['Bare metal'] !== 'TRUE') {
       instances.splice(i, 1)
       removedReasons['metal']++
       continue
@@ -132,7 +135,7 @@ function filterInstances(privateData: any, instances: any[]): any[] {
 
     //force dedicated host support
     if (
-      privateData['forceDHS'] &&
+      forceConfig['forceDHS'] &&
       instance['Dedicated Host support'] !== 'TRUE'
     ) {
       instances.splice(i, 1)
@@ -142,7 +145,7 @@ function filterInstances(privateData: any, instances: any[]): any[] {
 
     //intel cpu processor check
     if (
-      !( instance['Instance type'] in INSTANCE_TYPE_COMPUTE_PROCESSOR_MAPPING)
+      !(instance['Instance type'] in INSTANCE_TYPE_COMPUTE_PROCESSOR_MAPPING)
     ) {
       instances.splice(i, 1)
       removedReasons['unknown']++
@@ -172,7 +175,7 @@ function keepBestOfFamily(instances: any): any[] {
 }
 
 function createDictForPropery(instances: any, property: string): any {
-  var dict :  { [id: string] : Object; } = {}
+  var dict: { [id: string]: Object } = {}
   let minCost = Infinity
   let maxCost = 0
   let i = instances.length
@@ -186,8 +189,8 @@ function createDictForPropery(instances: any, property: string): any {
   return dict
 }
 
-function createPropertiesDict(instances: any[], weights: any) : any {
-  var dict :  { [id: string] : Object; } = {}
+function createPropertiesDict(instances: any[], weights: any): any {
+  var dict: { [id: string]: Object } = {}
   weights.forEach((value: boolean, key: string) => {
     let pDict = createDictForPropery(instances, key)
     dict[key] = pDict
@@ -195,7 +198,11 @@ function createPropertiesDict(instances: any[], weights: any) : any {
   return dict
 }
 
-function instanceFitter(privateData: any, instances: any[], weights: any): any[] {
+function instanceFitter(
+  privateData: any,
+  instances: any[],
+  weights: any,
+): any[] {
   // remove those which are way too different
   let instanceCosts: number[] = []
   let maxCost = 0
@@ -205,11 +212,15 @@ function instanceFitter(privateData: any, instances: any[], weights: any): any[]
   while (i--) {
     let instance = instances[i]
 
-    instance['On-Demand Windows pricing'] = parseFloat(instance['On-Demand Windows pricing'].split(' ')[0])
-    instance['On-Demand Linux pricing'] = parseFloat(instance['On-Demand Linux pricing'].split(' ')[0])
+    instance['On-Demand Windows pricing'] = parseFloat(
+      instance['On-Demand Windows pricing'].split(' ')[0],
+    )
+    instance['On-Demand Linux pricing'] = parseFloat(
+      instance['On-Demand Linux pricing'].split(' ')[0],
+    )
 
     // get emmision
-    let lookupInput : any[] = []
+    let lookupInput: any[] = []
     let input: LookupTableInput = {} as LookupTableInput
     input['serviceName'] = 'AmazonEC2'
     input['region'] = 'eu-west-2'
@@ -220,10 +231,11 @@ function instanceFitter(privateData: any, instances: any[], weights: any): any[]
 
     lookupInput.push(input)
 
-    const awsEstimatesData: LookupTableOutput[] = new App().getAwsEstimatesFromInputData(lookupInput)
+    const awsEstimatesData: LookupTableOutput[] =
+      new App().getAwsEstimatesFromInputData(lookupInput)
 
     //removes those the model doesn't know
-    if(isNaN(awsEstimatesData[0]['co2e'])){
+    if (isNaN(awsEstimatesData[0]['co2e'])) {
       instances.splice(i, 1)
       continue
     }
@@ -234,14 +246,16 @@ function instanceFitter(privateData: any, instances: any[], weights: any): any[]
   let propertyDict = createPropertiesDict(instances, weights['values'])
 
   i = 0
-  
+
   while (i < instances.length) {
     let instance = instances[i]
     let cost = 0
     weights['values'].forEach((value: number, key: string) => {
       let pDict = propertyDict[key]
-      let val = (parseFloat(instance[key]) - pDict['min'])/(pDict['max'] - pDict['min'])
-      if(weights['config'][key] === '-'){
+      let val =
+        (parseFloat(instance[key]) - pDict['min']) /
+        (pDict['max'] - pDict['min'])
+      if (weights['config'][key] === '-') {
         val = 1 - val
       }
       cost += val * value
@@ -284,12 +298,15 @@ function keepInstanceWithLowestCost(instances: any[]): any {
   return bestInstance
 }
 
-export default async function privateToAws(privateData: any, weights: any): Promise<any> {
-  
+export default async function privateToAws(
+  privateData: any,
+  weights: any,
+  forceConfig: any,
+): Promise<any> {
   let instances = await getAWSData()
   privateData = formatPrivateData(privateData)
 
-  instances = filterInstances(privateData, instances)
+  instances = filterInstances(privateData, instances, forceConfig)
 
   if (!privateData['forceMetal']) {
     instances = keepBestOfFamily(instances)

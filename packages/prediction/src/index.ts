@@ -21,13 +21,13 @@ async function aysncDefeater(bt: any): Promise<void> {
   let abt = await bt
   let aweights = await weights
   console.log(aweights)
-  let res = await predictAWS(abt, aweights)
+  let res = await predictAWS(abt, aweights, {})
   const predictionOutputFile = path.join(process.cwd(), 'predictionOutput.csv')
   writePredictionToCsv(predictionOutputFile, res)
   console.log(res)
 }
 
-aysncDefeater(BT)
+//aysncDefeater(BT)
 //let pred = new Prediction()
 // let res = Prediction.serverStructureToAWSStructure("AMD EPYC 1st Gen", 4, 32)
 // Prediction.serverStructureToAWSStructure("AMD EPYC 1st Gen", 8, 32)
@@ -37,5 +37,8 @@ aysncDefeater(BT)
 
 // awsMain()
 
+import cli from './cli'
+import * as console from 'console'
 
-export * from './application'
+cli()
+//export * from './application'
