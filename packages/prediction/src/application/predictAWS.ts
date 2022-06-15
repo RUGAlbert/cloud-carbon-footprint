@@ -28,6 +28,9 @@ async function createLookupTable(
     let config = configs[i]
     let res = await privateToAws(config, weights, forceConfig)
     let loc = MAP_LOCATIONS[config['SiteName'].toString()]
+    if(loc == undefined){
+      loc = config['SiteName'].toString()
+    }
 
     let input: LookupTableInput = {} as LookupTableInput
     input['serviceName'] = 'AmazonEC2'
