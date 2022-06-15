@@ -23,7 +23,8 @@ async function createLookupTable(
 ): Promise<LookupTableInput[]> {
   let lookupInput: LookupTableInput[] = []
   let i = 0
-  while (i < 4) {
+  let length = configs.length
+  while (i < length) {
     let config = configs[i]
     let res = await privateToAws(config, weights, forceConfig)
     let loc = MAP_LOCATIONS[config['SiteName'].toString()]
@@ -187,10 +188,10 @@ export default async function predictAWS(
   let onSiteValues = await predictOnSite(configs)
   let lookupInput = await createLookupTable(configs, weights, forceConfig)
 
-  const inputLUTFile = path.join(process.cwd(), 'AWS_inputLut.csv')
+  const inputLUTFile = path.join(process.cwd(), 'output', 'AWS_inputLut.csv')
   writeLUTInputToCsv(inputLUTFile, lookupInput)
 
-  const outputLUTFile = path.join(process.cwd(), 'AWS_outputLut.csv')
+  const outputLUTFile = path.join(process.cwd(), 'output', 'AWS_outputLut.csv')
   const awsEstimatesData: LookupTableOutput[] =
     new App().getAwsEstimatesFromInputData(lookupInput)
 

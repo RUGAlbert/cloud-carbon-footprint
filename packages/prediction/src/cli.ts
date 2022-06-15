@@ -48,6 +48,6 @@ export default async function cli(argv: string[] = process.argv) {
   let abt = await bt
   let aweights = await weights
   let res = await predictAWS(abt, aweights, forceConfig)
-  const predictionOutputFile = path.join(process.cwd(), 'predictionOutput.csv')
+  const predictionOutputFile = path.join(process.cwd(), 'output', 'predictionOutput.csv')
   writePredictionToCsv(predictionOutputFile, res)
 }

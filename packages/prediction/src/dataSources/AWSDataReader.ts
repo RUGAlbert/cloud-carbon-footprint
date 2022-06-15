@@ -16,5 +16,5 @@ export async function readAWSData(
 export default async function getAWSData(
   ): Promise<any[]> {
   
-	return readAWSData("C:\\Users\\alber\\repositories\\school\\cloud-carbon-footprint\\packages\\prediction\\instancetypes.csv");
+	return readAWSData("C:\\Users\\alber\\repositories\\school\\cloud-carbon-footprint\\packages\\prediction\\input\\instancetypes.csv");
   }
