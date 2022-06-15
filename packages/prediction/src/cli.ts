@@ -1,10 +1,11 @@
 import commander from 'commander'
 import moment from 'moment'
+import csv from 'csvtojson'
 import path from 'path'
 import * as process from 'process'
 
 import { predictAWS } from './application'
-import { BTDataReader, writePredictionToCsv } from './dataSources'
+import { writePredictionToCsv } from './dataSources'
 import { createAHPTable } from './ahp'
 
 export default async function cli(argv: string[] = process.argv) {
@@ -41,7 +42,7 @@ export default async function cli(argv: string[] = process.argv) {
   console.log(forceConfig)
 
   //'C:\\Users\\alber\\repositories\\school\\cloud-carbon-footprint\\packages\\prediction\\btInputTesco.csv',
-  let bt = BTDataReader(programOptions.btFile)
+  let bt = await csv().fromFile(programOptions.btFile)
 
   //'C:\\Users\\alber\\repositories\\school\\cloud-carbon-footprint\\packages\\prediction\\ahpWeights.csv',
   let weights = createAHPTable(programOptions.weights)
