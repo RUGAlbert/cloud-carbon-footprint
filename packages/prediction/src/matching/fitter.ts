@@ -4,6 +4,12 @@ import {
   LookupTableOutput,
 } from '@cloud-carbon-footprint/common'
 
+/**
+ * Finds the minimum and maximum values of a property
+ * @param instances the instances to be used
+ * @param property the property to create the dict for
+ * @returns dict with min and max score
+ */
 function createDictForPropery(instances: any, property: string): any {
   var dict: { [id: string]: Object } = {}
   let minScore = Infinity
@@ -19,6 +25,12 @@ function createDictForPropery(instances: any, property: string): any {
   return dict
 }
 
+/**
+ * calculates for all used properties the min and max value
+ * @param instances the instances to be used
+ * @param weights An array which includes all the properties to be used
+ * @returns an array with all the min max values
+ */
 function createPropertiesDict(instances: any[], weights: any): any {
   var dict: { [id: string]: Object } = {}
   weights.forEach((value: boolean, key: string) => {
@@ -28,7 +40,12 @@ function createPropertiesDict(instances: any[], weights: any): any {
   return dict
 }
 
-function prepeareInstances(instances: any[]) {
+/**
+ * Makes sure all the instances have the correct format
+ * @param instances instances to be fixed
+ * @returns the fixed instances
+ */
+function prepareInstances(instances: any[]) : any[] {
   //fix prices properties
   let i = instances.length
   while (i--) {
@@ -68,6 +85,14 @@ function prepeareInstances(instances: any[]) {
   return instances
 }
 
+/**
+ * Calculates the score of an the instance
+ *
+ * @param instance the AWS instance to calculate the score of
+ * @param weights the weights of the different properties
+ * @param propertyDict the propertydict which has the minimum and maximum to be used for the utility function
+ * @returns the score
+ */
 function getScore(instance: any, weights: any, propertyDict: any) {
   let score = 0
   weights['values'].forEach((value: number, key: string) => {
@@ -82,8 +107,13 @@ function getScore(instance: any, weights: any, propertyDict: any) {
   return score
 }
 
+/**
+ * Fits all instances based on a score function. The instances with the highest score is returned
+ * @param instances the instances to score from
+ * @param weights the weights of the properties used to generate the score
+ * @returns instances with the best score
+ */
 export function instanceFitter(
-  privateData: any,
   instances: any[],
   weights: any,
 ): any[] {
@@ -91,12 +121,13 @@ export function instanceFitter(
   let instanceScores: number[] = []
   let maxScore = 0
 
-  instances = prepeareInstances(instances)
+  instances = prepareInstances(instances)
 
   let propertyDict = createPropertiesDict(instances, weights['values'])
 
   let i = 0
 
+  //determine max score and calculate all scores
   while (i < instances.length) {
     let score = getScore(instances[i], weights, propertyDict)
     if (score > maxScore) {
@@ -107,6 +138,7 @@ export function instanceFitter(
     i++
   }
 
+  //get all those instances with the max score
   i = instances.length
   while (i--) {
     if (instanceScores[i] < maxScore) {

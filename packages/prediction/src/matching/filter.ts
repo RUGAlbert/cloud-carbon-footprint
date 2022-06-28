@@ -1,5 +1,12 @@
 import { INSTANCE_TYPE_COMPUTE_PROCESSOR_MAPPING } from '@cloud-carbon-footprint/aws'
 
+/**
+ * Removes all instances which are unable to satisfy the requirements of the private cloud
+ * @param privateData the dict of the privateData 
+ * @param instances all the instances to choose from
+ * @param forceConfig the configuration with all the user specified stuff
+ * @returns the instances which are able to satisfy the requirements of the private cloud
+ */
 export function filterInstances(
   privateData: any,
   instances: any[],

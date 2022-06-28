@@ -78,7 +78,7 @@ export default async function privateToAws(
     instances = keepBestOfFamily(instances)
   }
 
-  instances = instanceFitter(privateData, instances, weights)
+  instances = instanceFitter(instances, weights)
 
   return keepInstanceWithLowestCost(instances)
 }
