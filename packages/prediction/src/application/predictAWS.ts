@@ -12,6 +12,13 @@ import {
 } from '@cloud-carbon-footprint/common'
 import { createLookupTable } from './lutMaker'
 
+/**
+ * Determine total emissions of the public cloud
+ * @param configs the private data configurations
+ * @param awsEstimatesData the lookuptable output, which has the emissions per unit
+ * @param onSiteValues the emissions done by the private cloud
+ * @returns the total emissions of the public cloud
+ */
 function getTotals(
   configs: any,
   awsEstimatesData: LookupTableOutput[],
@@ -102,6 +109,11 @@ function getTotals(
   return predictionOutput
 }
 
+/**
+ * predicts the on site emissions
+ * @param configs private cloud configurations
+ * @returns emissions done by private cloud
+ */
 async function predictOnSite(configs: any[]): Promise<any> {
   let onPremiseInputData: OnPremiseDataInput[] = []
 
@@ -128,6 +140,13 @@ async function predictOnSite(configs: any[]): Promise<any> {
   return onPremiseEstimatesData
 }
 
+/**
+ * predict AWS emissions based on private cloud configuration
+* @param configs private cloud configurations
+ * @param weights the weights and parameters used to fit the best instance for the config
+ * @param forceConfig user specified user configuration
+ * @returns the total emissions
+ */
 export default async function predictAWS(
   configs: any,
   weights: any,

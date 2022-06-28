@@ -2,6 +2,13 @@ import { LookupTableInput } from '@cloud-carbon-footprint/common'
 import { MAP_LOCATIONS } from './../matching'
 import { privateToAws } from './../matching'
 
+/**
+ * Get a list of all the private cloud configurations and creates a LUT for the model to be used
+ * @param configs private cloud configurations
+ * @param weights the weights and parameters used to fit the best instance for the config
+ * @param forceConfig user specified user configuration
+ * @returns LUT table with instances used to determine emission
+ */
 export async function createLookupTable(
   configs: any,
   weights: any,
