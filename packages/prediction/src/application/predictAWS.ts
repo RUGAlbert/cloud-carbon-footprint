@@ -1,22 +1,16 @@
-
 import {
   writeLUTInputToCsv,
   writeLUTOutputToCsv,
   PredictionOutput,
 } from './../dataSources'
-import {
-  LookupTableInput,
-  LookupTableOutput,
-} from '@cloud-carbon-footprint/common'
+import { LookupTableOutput } from '@cloud-carbon-footprint/common'
 import { App } from '@cloud-carbon-footprint/app'
 import path from 'path'
 import {
   OnPremiseDataInput,
   OnPremiseDataOutput,
 } from '@cloud-carbon-footprint/common'
-import {createLookupTable} from './lutMaker'
-
-
+import { createLookupTable } from './lutMaker'
 
 function getTotals(
   configs: any,
@@ -137,7 +131,7 @@ async function predictOnSite(configs: any[]): Promise<any> {
 export default async function predictAWS(
   configs: any,
   weights: any,
-  forceConfig: any
+  forceConfig: any,
 ): Promise<any> {
   let onSiteValues = await predictOnSite(configs)
   let lookupInput = await createLookupTable(configs, weights, forceConfig)

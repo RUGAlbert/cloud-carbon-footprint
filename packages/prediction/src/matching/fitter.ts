@@ -6,16 +6,16 @@ import {
 
 function createDictForPropery(instances: any, property: string): any {
   var dict: { [id: string]: Object } = {}
-  let minCost = Infinity
-  let maxCost = 0
+  let minScore = Infinity
+  let maxScore = 0
   let i = instances.length
   while (i--) {
     let instance = instances[i]
-    minCost = Math.min(minCost, instance[property])
-    maxCost = Math.max(maxCost, instance[property])
+    minScore = Math.min(minScore, instance[property])
+    maxScore = Math.max(maxScore, instance[property])
   }
-  dict['min'] = minCost
-  dict['max'] = maxCost
+  dict['min'] = minScore
+  dict['max'] = maxScore
   return dict
 }
 
@@ -28,15 +28,7 @@ function createPropertiesDict(instances: any[], weights: any): any {
   return dict
 }
 
-export function instanceFitter(
-  privateData: any,
-  instances: any[],
-  weights: any,
-): any[] {
-  // remove those which are way too different
-  let instanceCosts: number[] = []
-  let maxCost = 0
-
+function prepeareInstances(instances: any[]) {
   //fix prices properties
   let i = instances.length
   while (i--) {
@@ -73,35 +65,51 @@ export function instanceFitter(
     instance['Emmision'] = awsEstimatesData[0]['co2e']
   }
 
+  return instances
+}
+
+function getScore(instance: any, weights: any, propertyDict: any) {
+  let score = 0
+  weights['values'].forEach((value: number, key: string) => {
+    let pDict = propertyDict[key]
+    let val =
+      (parseFloat(instance[key]) - pDict['min']) / (pDict['max'] - pDict['min'])
+    if (weights['config'][key] === '-') {
+      val = 1 - val
+    }
+    score += val * value
+  })
+  return score
+}
+
+export function instanceFitter(
+  privateData: any,
+  instances: any[],
+  weights: any,
+): any[] {
+  // remove those which are way too different
+  let instanceScores: number[] = []
+  let maxScore = 0
+
+  instances = prepeareInstances(instances)
+
   let propertyDict = createPropertiesDict(instances, weights['values'])
 
-  i = 0
+  let i = 0
 
   while (i < instances.length) {
-    let instance = instances[i]
-    let cost = 0
-    weights['values'].forEach((value: number, key: string) => {
-      let pDict = propertyDict[key]
-      let val =
-        (parseFloat(instance[key]) - pDict['min']) /
-        (pDict['max'] - pDict['min'])
-      if (weights['config'][key] === '-') {
-        val = 1 - val
-      }
-      cost += val * value
-    })
-
-    if (cost > maxCost) {
-      maxCost = cost
+    let score = getScore(instances[i], weights, propertyDict)
+    if (score > maxScore) {
+      maxScore = score
     }
 
-    instanceCosts.push(cost)
+    instanceScores.push(score)
     i++
   }
 
   i = instances.length
   while (i--) {
-    if (instanceCosts[i] < maxCost) {
+    if (instanceScores[i] < maxScore) {
       instances.splice(i, 1)
     }
   }
