@@ -41,7 +41,7 @@ function prepeareInstances(instances: any[]) {
       instance['On-Demand Linux pricing'].split(' ')[0],
     )
 
-    // get emmision
+    // get emission
     let lookupInput: any[] = []
     let input: LookupTableInput = {} as LookupTableInput
     input['serviceName'] = 'AmazonEC2'
@@ -62,7 +62,7 @@ function prepeareInstances(instances: any[]) {
       continue
     }
     //splice
-    instance['Emmision'] = awsEstimatesData[0]['co2e']
+    instance['Emission'] = awsEstimatesData[0]['co2e']
   }
 
   return instances
