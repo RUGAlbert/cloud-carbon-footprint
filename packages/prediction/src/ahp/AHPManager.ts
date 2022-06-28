@@ -1,11 +1,11 @@
 import csv from 'csvtojson'
 
+/**
+ * Calculates the weights based on pair-wise weights matrix
+ * @param filepath the file with pairwise weights
+ * @returns the weights
+ */
 export default async function createAHPTable(filepath : string) : Promise<{}> {
-	let w = getWeights(filepath)
-	return w
-}
-
-async function getWeights(filepath: string) : Promise<{}> {
 	const matrix = await csv().fromFile(filepath)
 	let params = []
 	for (const [k, _] of Object.entries(matrix[0])) {
