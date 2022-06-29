@@ -25,12 +25,13 @@ export function filterInstances(
     unknown: 0,
   }
 
+
+  //loop trough all the instances in reverse so you are able to remove instances
   let i = instances.length
 
   while (i--) {
     let instance = instances[i]
     //start with cpus
-    // console.log(parseInt(instance["vCPUs"]), parseInt(privateData["# CPU"]))
     if (
       parseInt(instance['vCPUs']) < privateData['# CPU'] ||
       parseInt(instance['Cores']) < privateData['# Cores'] ||
@@ -59,7 +60,6 @@ export function filterInstances(
       removedReasons['gpu']++
       continue
     }
-    //break;
 
     //experimental: architecture (doesn't work super good, but makes it a bit better)
     if (!instance['Architecture'].includes('x86_64')) {

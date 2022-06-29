@@ -139,6 +139,7 @@ export function instanceFitter(
   }
 
   //get all those instances with the max score
+  // loop trough it in reverse in order to remove the instances
   i = instances.length
   while (i--) {
     if (instanceScores[i] < maxScore) {
