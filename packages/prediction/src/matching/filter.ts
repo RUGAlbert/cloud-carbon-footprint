@@ -126,6 +126,6 @@ export function filterInstances(
     }
   }
 
-  console.log(removedReasons)
+  //console.log(removedReasons)
   return instances
 }

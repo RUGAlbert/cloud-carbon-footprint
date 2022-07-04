@@ -9,6 +9,7 @@ import { writePredictionToCsv } from './dataSources'
 import { createAHPTable } from './ahp'
 
 export default async function cli(argv: string[] = process.argv) {
+  console.time('cli')
   const program = new commander.Command()
   program.storeOptionsAsProperties(false)
 
@@ -51,4 +52,7 @@ export default async function cli(argv: string[] = process.argv) {
   let res = await predictAWS(abt, aweights, forceConfig)
   const predictionOutputFile = path.join(process.cwd(), 'output', 'predictionOutput.csv')
   writePredictionToCsv(predictionOutputFile, res)
+
+  
+console.timeEnd('cli')
 }

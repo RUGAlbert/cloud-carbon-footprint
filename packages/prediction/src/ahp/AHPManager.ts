@@ -48,9 +48,9 @@ export default async function createAHPTable(filepath : string) : Promise<{}> {
 
 	let CI = (lambda - length) / (length - 1)
 
-	//give warning if the APH cannot be done with these values
+	//give warning if the AHP cannot be done with these values
 	if(CI >= 0.1){
-		console.log("Be carefull APH is not correct")
+		console.log("Be carefull AHP is not correct")
 	}
 
 	

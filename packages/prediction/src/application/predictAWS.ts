@@ -37,8 +37,8 @@ function getTotals(
   let emissionStored = 0
   let kwhStored = 0
 
-  //asume it is the same order as before, this means we can do / 3
   awsEstimatesData.forEach((element) => {
+    //asume it is the same order as before, this means we can do / 3
     let btConfig = configs[Math.floor(i / 3)]
     let OnPremiseConfig = onSiteValues[Math.floor(i / 3)]
     if (element['usageUnit'] === 'Hrs') {
@@ -152,11 +152,17 @@ export default async function predictAWS(
   weights: any,
   forceConfig: any,
 ): Promise<any> {
+  console.time('predictOnSite')
   let onSiteValues = await predictOnSite(configs)
+  console.timeEnd('predictOnSite')
+  console.time('createLut')
   let lookupInput = await createLookupTable(configs, weights, forceConfig)
 
   const inputLUTFile = path.join(process.cwd(), 'output', 'AWS_inputLut.csv')
   writeLUTInputToCsv(inputLUTFile, lookupInput)
+  
+  console.timeEnd('createLut')
+  console.time('createEst')
 
   const outputLUTFile = path.join(process.cwd(), 'output', 'AWS_outputLut.csv')
   const awsEstimatesData: LookupTableOutput[] =
@@ -164,6 +170,10 @@ export default async function predictAWS(
 
   writeLUTOutputToCsv(outputLUTFile, awsEstimatesData)
 
+  console.timeEnd('createEst')
+  console.time('totals')
+
   let totals = getTotals(configs, awsEstimatesData, onSiteValues)
+  console.timeEnd('totals')
   return totals
 }
